@@ -34,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/ping").permitAll()
+                .antMatchers("/validatePerfResults").permitAll()
                 .antMatchers("/swagger/**").permitAll()
                 //TODO: sample call secured with ROLE_API
                 //.antMatchers("/ping").hasAuthority("ROLE_API")
@@ -43,7 +44,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+
                 .exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
+
     }
 
     @Override

@@ -17,6 +17,19 @@
             showLabel: false
         };
 
+        ctrl.minitabs = [
+            { name: "Static Analysis"},
+            { name: "Security"},
+            { name: "OpenSource"},
+            { name: "Tests"}
+
+        ];
+
+        ctrl.miniWidgetView = ctrl.minitabs[0].name;
+        ctrl.miniToggleView = function (index) {
+            ctrl.miniWidgetView = typeof ctrl.minitabs[index] === 'undefined' ? ctrl.minitabs[0].name : ctrl.minitabs[index].name;
+        };
+
         ctrl.showStatusIcon = showStatusIcon;
         ctrl.showDetail = showDetail;
         ctrl.showLibraryPolicyDetails = showLibraryPolicyDetails;
@@ -54,8 +67,7 @@
             var deferred = $q.defer();
             var caData = _.isEmpty(response.result) ? {} : response.result[0];
 
-
-            ctrl.reportUrl = response.reportUrl;
+            ctrl.reportUrl = caData.url;
             ctrl.versionNumber = caData.version;
 
             ctrl.rulesCompliance = getMetric(caData.metrics, 'violations_density');
@@ -186,6 +198,10 @@
                 for (var i = 0; i < threats.length; ++i) {
                     var level = threats[i].level;
                     var count = threats[i].count;
+                    if ((level.toLowerCase() === 'critical') && (count > 0) && (highest < 4)) {
+                        highest = 4;
+                        highestCount = count;
+                    }
                     if ((level.toLowerCase() === 'high') && (count > 0) && (highest < 3)) {
                         highest = 3;
                         highestCount = count;
@@ -231,6 +247,9 @@
             ctrl.getDashStatus = function getDashStatus() {
 
                 switch (ctrl.librarySecurityThreatStatus.level) {
+                    case 4:
+                        return 'critical';
+
                     case 3:
                         return 'alert';
 
